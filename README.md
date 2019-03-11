@@ -1,5 +1,5 @@
 # _.NET_Core
-=========================
+
 .Net Core ile temel CRUD işlemleri, üye register - login ve authorize işlemleri gerçekleştirilmiştir.
 
 ----------
