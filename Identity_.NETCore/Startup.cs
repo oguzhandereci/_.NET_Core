@@ -43,11 +43,11 @@ namespace Identity_.NETCore
             //    .AddRoles<AppRole>()
             //    .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            //services.AddIdentity<AppUser,AppRole>()
-            //        .AddRoleManager<RoleManager<AppRole>>()
-            //        .AddDefaultUI()
-            //        .AddDefaultTokenProviders()
-            //        .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddIdentity<AppUser, AppRole>()
+                    .AddRoleManager<RoleManager<AppRole>>()
+                    .AddDefaultUI()
+                    .AddDefaultTokenProviders()
+                    .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.Configure<IdentityOptions>(options =>
             {
