@@ -24,7 +24,7 @@
 
  - .Net Core
  - .Net Core Identity
- - .Net Core Role Based Authentication
+ - .Net Core Role Based Authorization
  - EntityFramework Code First
  
  
