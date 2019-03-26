@@ -16,6 +16,7 @@ using Kuzey.MODELS.IdentityEntities;
 using Kuzey.BLL.Repository.Abstracts;
 using Kuzey.MODELS.Entities;
 using Kuzey.BLL.Repository;
+using Kuzey.MODELS.Enums;
 
 namespace Kuzey.UI.Web
 {
@@ -46,9 +47,6 @@ namespace Kuzey.UI.Web
             //    .AddEntityFrameworkStores<MyContext>();
 
             services.AddIdentity<AppUser, AppRole>()
-                .AddRoleManager<RoleManager<AppRole>>()
-                .AddDefaultUI()
-                .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<MyContext>();
 
             services.Configure<IdentityOptions>(options =>
@@ -84,7 +82,24 @@ namespace Kuzey.UI.Web
             });
 
             services.AddScoped<IRepository<Category, int>, CategoryRepo>();
+            services.AddScoped<IRepository<Product, string>, ProductRepo>();
+            services.AddScoped<IRepoIdentity, RoleUserRepo>();
+            services.AddScoped<SignInManager<AppUser>, SignInManager<AppUser>>();
+            services.AddScoped<UserManager<AppUser>, UserManager<AppUser>>();
+            services.AddScoped<RoleManager<AppRole>, RoleManager<AppRole>>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("RequireAdministratorRole",
+                    policy => policy.RequireRole(IdentityRoles.Admin.ToString()));
+            });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("RequireUserRole",
+                    policy => policy.RequireRole(IdentityRoles.User.ToString()));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -103,7 +118,6 @@ namespace Kuzey.UI.Web
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseCookiePolicy();
 
             app.UseAuthentication();
 
@@ -113,6 +127,7 @@ namespace Kuzey.UI.Web
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+            app.UseCookiePolicy();
         }
     }
 }

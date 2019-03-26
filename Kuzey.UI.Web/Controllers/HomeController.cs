@@ -10,22 +10,19 @@ using Kuzey.UI.Web.Models;
 using Kuzey.BLL.Repository.Abstracts;
 using Microsoft.AspNetCore.Identity;
 using Kuzey.MODELS.IdentityEntities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Kuzey.UI.Web.Controllers
 {
     public class HomeController : Controller
     {
         private readonly IRepository<Category, int> _categoryRepo;
-        private readonly UserManager<AppUser> _userManager;
-        private readonly RoleManager<AppRole> _roleManager;
-        private readonly SignInManager<AppUser> _signInManager;
+        private readonly IRepository<Product, string> _productRepo;
 
-        public HomeController(IRepository<Category, int> categoryRepo, UserManager<AppUser> userManager, RoleManager<AppRole> roleManager, SignInManager<AppUser> signInManager)
+        public HomeController(IRepository<Category, int> categoryRepo, IRepository<Product, string> productRepo)
         {
             _categoryRepo = categoryRepo;
-            _userManager = userManager;
-            _roleManager = roleManager;
-            _signInManager = signInManager;
+            _productRepo = productRepo;
         }
 
         public IActionResult Index()
@@ -43,7 +40,32 @@ namespace Kuzey.UI.Web.Controllers
                 });
 
             }
-            return View();
+
+            if (!_productRepo.Queryable().Any())
+            {
+                var catId = _categoryRepo.GetAll().FirstOrDefault().Id;
+                _productRepo.Insert(new Product()
+                {
+                    CategoryId = catId,
+                    ProductName = "Chai",
+                    UnitPrice = 18.5m
+                });
+
+                _productRepo.Insert(new Product()
+                {
+                    CategoryId = catId,
+                    ProductName = "Chang",
+                    UnitPrice = 20
+                });
+            }
+
+            var data = _productRepo.Queryable().Include(x => x.Category).ToList();
+            foreach (var product in data)
+            {
+                product.UnitPrice *= 1.05m;
+                _productRepo.Update(product);
+            }
+            return View(data);
         }
 
         public IActionResult About()
